@@ -10,7 +10,6 @@ import numpy as np
 from torch.utils.data import Dataset, DataLoader
 from sklearn.metrics import f1_score
 
-# 1. 설정
 parser = argparse.ArgumentParser()
 parser.add_argument('version', type=str, help='데이터 버전 (예: train_v2)')
 args = parser.parse_args()
@@ -19,9 +18,8 @@ DEVICE = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 DATA_VERSION = args.version
 EPOCHS = 15
 BATCH_SIZE = 32
-LEARNING_RATE = 1e-4 # ViT는 학습률을 작게 잡는 것이 핵심입니다.
+LEARNING_RATE = 1e-4 
 
-# 2. 데이터셋 및 로더 (기존과 동일)
 class WaferDataset(Dataset):
     def __init__(self, data_path, label_mapping=None):
         self.data = pd.read_pickle(data_path)
@@ -44,9 +42,6 @@ val_dataset = WaferDataset(val_path, label_mapping=train_dataset.label_mapping)
 train_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=True)
 val_loader = DataLoader(val_dataset, batch_size=BATCH_SIZE, shuffle=False)
 
-# 3. ViT 모델 정의 (64x64 웨이퍼 데이터 최적화)
-# vit_tiny_patch16_224를 기반으로 하되, 64x64에 맞게 patch_size를 8로 강제 변경
-# 3. ViT 모델 정의 (완벽 수정본)
 model = timm.create_model(
     'vit_tiny_patch16_224', 
     pretrained=False, 
@@ -54,25 +49,21 @@ model = timm.create_model(
     in_chans=1
 )
 
-# 64x64 입력에 맞게 img_size를 강제로 64로 재설정
 model.img_size = 64
 
-# 패치 임베딩을 8x8 스트라이드로 변경 (64/8 = 8x8 = 64 패치)
 model.patch_embed.img_size = (64, 64)
 model.patch_embed.patch_size = (8, 8)
 model.patch_embed.grid_size = (8, 8)
 model.patch_embed.num_patches = 64
 model.patch_embed.proj = nn.Conv2d(1, 192, kernel_size=(8, 8), stride=(8, 8))
 
-# Positional Embedding을 64(패치) + 1(CLS) = 65개로 재생성
 model.pos_embed = nn.Parameter(torch.randn(1, 65, 192) * .02)
 
 model = model.to(DEVICE)
 optimizer = optim.AdamW(model.parameters(), lr=LEARNING_RATE)
 criterion = nn.CrossEntropyLoss()
 
-# 4. 학습 루프
-print(f"\n🚀 학습 시작: 모델=ViT-Tiny, 데이터={DATA_VERSION}")
+print(f" 학습 시작: 모델=ViT-Tiny, 데이터={DATA_VERSION}")
 print("-" * 85)
 
 total_start_time = time.time()
@@ -113,4 +104,4 @@ for epoch in range(1, EPOCHS + 1):
     print(f"Epoch [{epoch:02d}/{EPOCHS}] | Loss: {epoch_loss:.4f} | Acc: {epoch_acc:.2f}% | F1: {epoch_f1:.4f} | Time: {epoch_duration:.2f} min")
 
 print("-" * 85)
-print(f"✅ 학습 완료! 총 소요 시간: {(time.time() - total_start_time)/60:.2f}분")
+print(f" 학습 완료! 총 소요 시간: {(time.time() - total_start_time)/60:.2f}분")

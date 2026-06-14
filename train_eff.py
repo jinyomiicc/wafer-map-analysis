@@ -10,7 +10,6 @@ import numpy as np
 from torch.utils.data import Dataset, DataLoader
 from sklearn.metrics import f1_score
 
-# 1. 설정
 parser = argparse.ArgumentParser()
 parser.add_argument('version', type=str, help='데이터 버전 (예: train_v2)')
 args = parser.parse_args()
@@ -21,7 +20,6 @@ EPOCHS = 15
 LEARNING_RATE = 0.001
 BATCH_SIZE = 32
 
-# 2. 데이터셋 및 로더
 class WaferDataset(Dataset):
     def __init__(self, data_path, label_mapping=None):
         self.data = pd.read_pickle(data_path)
@@ -51,8 +49,7 @@ model = model.to(DEVICE)
 optimizer = optim.AdamW(model.parameters(), lr=LEARNING_RATE)
 criterion = nn.CrossEntropyLoss()
 
-# 4. 학습 루프
-print(f"\n🚀 학습 시작: 모델=EfficientNet-B0, 데이터={DATA_VERSION}")
+print(f" 학습 시작: 모델=EfficientNet-B0, 데이터={DATA_VERSION}")
 print("-" * 85)
 
 total_start_time = time.time()
@@ -84,14 +81,12 @@ for epoch in range(1, EPOCHS + 1):
             all_preds.extend(predicted.cpu().numpy())
             all_labels.extend(labels.cpu().numpy())
     
-    # 지표 계산
     epoch_f1 = f1_score(all_labels, all_preds, average='macro')
     epoch_acc = 100 * (np.array(all_preds) == np.array(all_labels)).mean()
     epoch_loss = running_loss / len(train_loader)
     epoch_duration = (time.time() - epoch_start_time) / 60
     
-    # 출력
     print(f"Epoch [{epoch:02d}/{EPOCHS}] | Loss: {epoch_loss:.4f} | Acc: {epoch_acc:.2f}% | F1: {epoch_f1:.4f} | Time: {epoch_duration:.2f} min")
 
 print("-" * 85)
-print(f"✅ 학습 완료! 총 소요 시간: {(time.time() - total_start_time)/60:.2f}분")
+print(f" 학습 완료! 총 소요 시간: {(time.time() - total_start_time)/60:.2f}분")
