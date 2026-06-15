@@ -15,8 +15,8 @@
 | 모델 | Batch Size | Learning Rate | Optimizer | epoch | 
 | :--- | :---: | :---: | :---: | :---: |
 | ResNet18 | 128 | 0.001 | AdamW | 15 |
-| EfficientNet-B0 | 32 | 0.001 | AdamW | 15 |
-| ViT-Tiny | 32 | 0.0001 | AdamW | 15 |
+| EfficientNet-B0 | 128 | 0.001 | AdamW | 15 |
+| ViT-Tiny | 128 | 0.0001 | AdamW | 15 |
 
 ## ⚙️ 전처리 단계 (Preprocessing)
 
@@ -45,15 +45,15 @@
 | 모델 | Accuracy | F1-Score | Inference Time (min) |
 | :--- | :---: | :---: | :---: |
 | **ResNet18** | **0.9717** | **0.8537** | **11.80** |
-| **EfficientNet-B0** | 0.9721| 0.8437 | 35.20 |
+| **EfficientNet-B0** | 0.9701| 0.8140 | 21.46 |
 | **ViT-Tiny** | 0.9663 | 0.7725 | 37.24 |
 
 ## 🏗 프로젝트 구조
 ```text
 wafer-map-analysis/
 ├── data/               # 원본 및 전처리 데이터
-├── models/             # 모델 아키텍처 정의
-├── notebooks/          # 실험용 Jupyter Notebook
-├── train.py            # 메인 학습 스크립트
+├── train.py            # Resnet 학습 스크립트
+├── train_eff.py        # Resnet18 학습 스크립트
+├── train_vit.py        # ViT-Tiny 학습 스크립트
 ├── make_data.py        # 데이터 전처리 스크립트
 └── README.md
