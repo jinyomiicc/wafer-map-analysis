@@ -18,7 +18,7 @@ DEVICE = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 DATA_VERSION = args.version
 EPOCHS = 15
 LEARNING_RATE = 0.001
-BATCH_SIZE = 32
+BATCH_SIZE = 128
 
 class WaferDataset(Dataset):
     def __init__(self, data_path, label_mapping=None):

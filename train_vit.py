@@ -17,7 +17,7 @@ args = parser.parse_args()
 DEVICE = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 DATA_VERSION = args.version
 EPOCHS = 15
-BATCH_SIZE = 32
+BATCH_SIZE = 128
 LEARNING_RATE = 1e-4 
 
 class WaferDataset(Dataset):
